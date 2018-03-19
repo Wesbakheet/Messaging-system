@@ -33,7 +33,7 @@ if(isset($_POST['submit']))
         $PasswordEn = md5(md5($InputUser . $password) . $salt); #  substr(md5($password), 0, 30);
 	$PassConfirm = mysqli_real_escape_string($conn, $_POST['passconfirm']);
 	
-	echo $PasswordEn;
+#	echo $PasswordEn;
         #Username Validation
         if(preg_match("/^[A-Z][a-zA-Z]+$/", $InputUser) === 0)
         {

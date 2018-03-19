@@ -41,7 +41,8 @@ if($_SESSION['ID'])
         	$conn = @mysqli_connect($Server, $MySuser, $MYSpass,$MYSdb) or die("There is an error");
 	        $To = mysqli_real_escape_string($conn, $_POST['To']);
 	        $msg = mysqli_real_escape_string($conn, $_POST['message']);
-        	$msgEn = substr(md5($msg), 0, 30);
+		$msgT = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
+        	$msgEn = substr(md5($msgT), 0, 30);
 	
 		$MYsqlcomm1 = $conn->prepare("SELECT ID FROM Users WHERE UserName = ?;");
 	        $MYsqlcomm1->bind_param("s", $To);
@@ -53,7 +54,7 @@ if($_SESSION['ID'])
 		if($rows != NULL)
 		{
 			$MYsqlcomm2 = $conn->prepare("INSERT INTO Msgs (FromUser,ToUser,Content) VALUES (?,?,?);");
-       			$MYsqlcomm2->bind_param("iis",$sender,$ID,$msg);
+       			$MYsqlcomm2->bind_param("iis",$sender,$ID,$msgT);
         		$MYsqlcomm2->execute();
 	        #	header("Location: welcome.html", true, 301);
 		#       $MYsqlcomm->close();
