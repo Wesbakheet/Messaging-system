@@ -38,33 +38,38 @@ if($_SESSION['ID'])
 <?php
 	if(isset($_POST['send']))
 	{
-        	$conn = @mysqli_connect($Server, $MySuser, $MYSpass,$MYSdb) or die("There is an error");
+	      	$conn = @mysqli_connect($Server, $MySuser, $MYSpass,$MYSdb) or die("There is an error");
 	        $To = mysqli_real_escape_string($conn, $_POST['To']);
 	        $msg = mysqli_real_escape_string($conn, $_POST['message']);
 		$msgT = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
-        	$msgEn = substr(md5($msgT), 0, 30);
-	
-		$MYsqlcomm1 = $conn->prepare("SELECT ID FROM Users WHERE UserName = ?;");
-	        $MYsqlcomm1->bind_param("s", $To);
-        	$MYsqlcomm1->execute();
-	        $MYsqlcomm1->bind_result($ID);
-        	$rows = $MYsqlcomm1->fetch();
-		$MYsqlcomm1->close();
-
-		if($rows != NULL)
+        	#$msgEn = substr(md5($msgT), 0, 30);
+                if(preg_match("/^[a-zA-Z0-9]+$/", $msg) === 0)
 		{
-			$MYsqlcomm2 = $conn->prepare("INSERT INTO Msgs (FromUser,ToUser,Content) VALUES (?,?,?);");
-       			$MYsqlcomm2->bind_param("iis",$sender,$ID,$msgT);
-        		$MYsqlcomm2->execute();
-	        #	header("Location: welcome.html", true, 301);
-		#       $MYsqlcomm->close();
-	        #	$conn->close();
-		#       $MYsqlcomm->close();
-	        #	$conn->close();
+			echo "You try to hack!";
 		}
 		else
 		{
-			echo "The user you try to send message for him is not found.";
+			$MYsqlcomm1 = $conn->prepare("SELECT ID FROM Users WHERE UserName = ?;");
+		        $MYsqlcomm1->bind_param("s", $To);
+	        	$MYsqlcomm1->execute();
+		        $MYsqlcomm1->bind_result($ID);
+        		$rows = $MYsqlcomm1->fetch();
+			$MYsqlcomm1->close();
+
+			if($rows != NULL)
+			{
+				$MYsqlcomm2 = $conn->prepare("INSERT INTO Msgs (FromUser,ToUser,Content) VALUES (?,?,?);");
+  	     			$MYsqlcomm2->bind_param("iis",$sender,$ID,$msgT);
+        			$MYsqlcomm2->execute();
+	        		#       $MYsqlcomm->close();
+	        	#	$conn->close();
+			#       $MYsqlcomm->close();
+		        #	$conn->close();
+			}
+			else
+			{
+				echo "The user you try to send message for him is not found.";
+			}
 		}
 	}
 }
